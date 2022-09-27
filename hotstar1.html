@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+    }
+    input{
+        width: 150px;
+    }
+    h1{
+        background-color: aquamarine;
+        font-weight: lighter;
+        display: flex;
+        justify-content:space-around;
+    }
+    img{
+        width: 100%;
+        height: 250px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    #movielist{
+        display: grid;
+        margin-top: 1%;
+        grid-template-columns: repeat(5,1fr);
+        grid-template-rows: repeat(auto,auto);
+        gap: 25px;
+    }
+    #movielist>div{
+        /* border: 3px solid red; */
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        border-radius: 10px;
+
+    }
+    .movieresult:hover{
+        display: block;
+        color: blue;
+        cursor: pointer;
+    }
+    a{
+        color: blue;
+        text-decoration: none;
+    }
+</style>
+<body>
+    <h1>Movie-Hub
+        <a href="hotstar3.html">Trending</a>
+    </h1>
+    <h2 id="infomore"></h2>
+    <input oninput="throttlefunction(main,500)" type="text" id="query" placeholder="Enter movie names">
+    <div id="movielist"></div>
+</body>
+</html>
+<script>
+
+    //to fetch from API 
+    async function searchmovie(name){
+        const url=`http://www.omdbapi.com/?apikey=2f6433b8&s=${name}`;
+    try{
+        let res = await fetch(url);
+
+        let movienames= await res.json();
+        // console.log(movienames)
+        return movienames.Search; //in api response Search key has movie names
+    }   
+    catch(err){
+        console.log(err)
+        return false;
+        
+    }
+    }
+
+    //to take input from user
+    async function main(){
+        let q=document.querySelector("#query").value;
+        // as async function returns a promise so we have to await
+        //and for await to work, this function is also async;
+        let x = await searchmovie(q);
+        console.log("x :",x);
+
+        if(x!=undefined){
+            //when there is response false i.e movienames.Search is undefined
+            //displaymovies() fails, to avoid that this condition is used
+            //this function only runs when there is true response from movienames()
+            displaymovies(x)
+        }
+        
+    }
+
+    //to append to DOM
+    function displaymovies(data){
+        let cont=document.querySelector("#movielist");
+            cont.innerHTML=null;
+            
+        let info = document.querySelector("#infomore");
+        info.innerText = "Click any title to know more about it";
+        info.style.color = "tomato";
+
+        data.forEach(function(ele){
+            let poster= document.createElement("img")
+            if(ele.Poster=="N/A"){
+            poster.alt="Poster Unavailable"
+            }
+            else
+            poster.src=ele.Poster;
+
+            let name=document.createElement("h4")
+            name.innerText=ele.Title;
+
+            let div= document.createElement("div");
+            div.className="movieresult"
+            div.append(poster,name);
+            div.addEventListener("click",moviedetails)
+
+            //to show details of a movie on clicking
+            function moviedetails(){
+        localStorage.setItem("moviename",ele.Title)
+        window.location.href="hotstar2.html";
+
+    }
+    
+
+            cont.append(div)
+        })
+    }
+    let id;
+    function throttlefunction(fun,delay){
+
+        //if user inputs before completion of delay interval
+        //this clears previous id
+        if(id){
+            clearTimeout(id);
+        }
+
+        //on every input character, a new id is assigned to setTimeout with delay
+        //now if user adds another char to prvious input before delay
+        //we need to clear it out
+        id=setTimeout(function(){
+            fun()
+        },delay)
+
+        
+    }
+
+    
+</script>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+  background-image: linear-gradient(to right, rgba(255,0,0,0), rgba(255,0,0,1));
+  font-family: sans-serif;
+  text-align: center;
+}
+h2{
+    text-align: center;
+}
+
+#container{
+    display: flex;
+    /* border: 1px solid green; */
+    width: 100%;
+    height: 400px;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+#container>div:first-child{
+    width: 25%;
+    height: 100%;
+    /* border: 3px solid saddlebrown; */
+}
+#container>div:nth-child(2){
+    background-color: rgb(242, 242, 247);
+    /* border: 1px solid black; */
+    box-shadow: rgba(240, 46, 170, 0.4) 5px 5px, rgba(240, 46, 170, 0.3) 10px 10px, rgba(240, 46, 170, 0.2) 15px 15px, rgba(240, 46, 170, 0.1) 20px 20px, rgba(240, 46, 170, 0.05) 25px 25px;
+    border-radius: 5px;
+    width: 60%;
+    height: 100%;
+    margin: auto;
+}
+#poster{
+    width: 100%;
+    height: 100%;
+}
+#nodataimage{
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+    width: 500px;
+    height: 430px;
+}
+</style>
+<body>
+    <a href="hotstar1.html"><h2>Go to Home</h2></a>
+        <div id="container"></div>
+</body>
+</html>
+<script>
+    var mname=localStorage.getItem("moviename")
+    const url=`http://www.omdbapi.com/?apikey=2f6433b8&t=${mname}`;
+
+async function getData(){
+    try{
+        let res = await fetch(url);
+
+        let film= await res.json();
+        append(film)
+        console.log(film);
+    }   
+    catch(err){
+        console.log(err)
+        
+    }
+}
+getData()
+
+
+    function append(data){
+    // document.querySelector("body").style.backgroundImage="linear-gradient(to right, rgba(255,0,0,0), rgba(255,0,0,0))"
+
+    let container=document.getElementById("container")
+        let poster=document.createElement("img")
+        poster.id="poster"
+        poster.src=data.Poster;
+        let divimage=document.createElement("div");
+        divimage.append(poster);
+
+        let pa=document.createElement("p");
+        pa.innerText="Directed By - "+data.Director
+
+        let h2=document.createElement("h4")
+        h2.innerText=data.Title;
+
+        let p=document.createElement("p");
+        p.innerText=`Year - ${data.Year}`;
+        
+        
+        let ratings=data.Ratings;
+        let rinfo=""
+        
+        
+        for(let i=0;i<ratings.length;i++){
+            rinfo+=ratings[i].Source+" - "+ratings[i].Value+"\n";
+        }
+        // console.log(rinfo)
+        let p1=document.createElement("p");
+        p1.innerText=rinfo;
+
+        let plot=document.createElement("p");
+        plot.innerText=data.Plot;
+
+        let bo=document.createElement("p")
+        bo.innerText="Box Office - "+data.BoxOffice;
+
+        let cast=document.createElement("p")
+        cast.innerText="Cast - "+data.Actors;
+
+        let div2=document.createElement("div");
+        div2.append(h2,pa,p,p1,bo,plot,cast)
+
+        container.append(divimage,div2)
+        if(+data.imdbRating>8.5){
+            let rec=document.createElement("h2");
+            rec.style.color="green";
+            rec.style.textAlign="center"
+            rec.innerText="Recommended"
+            div2.append(rec)
+        }
+        
+}
+
+   
+</script>

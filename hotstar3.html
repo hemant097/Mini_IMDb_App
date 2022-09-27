@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+body{
+    font-family: sans-serif;
+    text-align: center;
+}
+    p{
+        font-size: 14px;
+        margin-top: -5%;
+        text-align: center;
+    }
+    #movielist{
+        display: grid;
+        
+        margin-top: 1%;
+        grid-template-columns: repeat(4,1fr);
+        grid-auto-rows: auto;
+        gap: 25px;
+    }
+    #movielist img{
+        width: 100%;
+        height: 60%;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    #movielist>div{
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        border-radius: 10px;
+    }
+</style>
+<body>
+    <h2>TRENDING FILMS & MOVIES OF THE WEEK</h2>
+    <div id="movielist">
+        
+    </div>
+</body>
+</html>
+<script>
+    const url=`https://api.themoviedb.org/3/trending/all/week?api_key=827bf059a9e461d00db2ef187ef1738e`;
+
+    async function getData(){
+    try{
+        let res = await fetch(url);
+
+        let film= await res.json();
+        displaymovies(film.results)
+        console.log(film);
+    }   
+    catch(err){
+        console.log(err)
+        
+    }
+}
+getData()
+
+function displaymovies(data){
+        let cont=document.querySelector("#movielist");
+            cont.innerHTML=null;
+        
+        data.forEach(function(ele){
+            let poster= document.createElement("img")
+            poster.src=`https://image.tmdb.org/t/p/w500/${ele.poster_path}`;
+
+            let name=document.createElement("h4")
+            name.innerText=ele.title||ele.name;
+
+            let plot=document.createElement("p")
+            plot.innerText=ele.overview;
+
+            let div= document.createElement("div");
+            div.className="movieres"
+            div.append(poster,name,plot);
+            // div.addEventListener("click",moviedetails)
+
+            //to show details of a movie on clicking
+        //     function moviedetails(){
+        // localStorage.setItem("moviename",ele.Title)
+        // window.location.href="hotstar2.html";
+
+    // }
+    
+
+            cont.append(div)
+        })
+    }
+</script>
